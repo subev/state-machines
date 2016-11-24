@@ -37,8 +37,7 @@ class Gain(SM):
         return inp * self.state
 
 class LanguageAcceptor(SM):
-    def __init__(self):
-        self.startState = 0
+    startState = 0
 
     def getNextValues(self, state, inp):
         if (state == 0 and inp == 'a'):
@@ -50,22 +49,42 @@ class LanguageAcceptor(SM):
         else:
             return (state, False)
 
+class UpDown(SM):
+    startState = 0
+
+    def getNextState(self, state, inp):
+        if (inp == 'u'):
+            return state + 1
+        elif (inp == 'd'):
+            return state - 1
+        else:
+            return state
+
 # ---------------------------------------
+
 a = Accumulator(100)
 a.start()
-print('a', a.step(20))
-print('a transduce', a.transduce([1,2,3,4,5]))
-print('a', a.step(4))
+print'a', a.step(20)
+print'a transduce', a.transduce([1,2,3,4,5])
+print'a', a.step(4)
 
 a2 = Accumulator(50)
 a2.start()
-print('a2', a2.step(-20))
+print'a2', a2.step(-20)
 
 g = Gain(5)
 g.start()
-print('Gain transduce', g.transduce([3, 6, 5, 3, 2, 3.1, 4.6, 0.33]))
-print('Gain sttep', g.step(4))
+print'Gain transduce', g.transduce([3, 6, 5, 3, 2, 3.1, 4.6, 0.33])
+print'Gain sttep', g.step(4)
 
 language = LanguageAcceptor()
 language.start()
-print('language acceptor', language.transduce(['a', 'b', 'c', 'c', 'a', 'd', 'a', 'b']));
+acceptorInput = ['a', 'b', 'c', 'c', 'a', 'd', 'a', 'b']
+print'language acceptor inputs:', acceptorInput;
+print'language acceptor output:', language.transduce(acceptorInput);
+
+ud = UpDown()
+ud.start()
+updownInput = ['r', 'e', 'u', 'd', 'u', 'u', 'u', 'd']
+print'up-down inputs', updownInput;
+print'up-down output', ud.transduce(updownInput);
