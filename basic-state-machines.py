@@ -1,4 +1,6 @@
 class SM:
+    startState = None
+
     def start(self):
         self.state = self.startState
 
@@ -79,6 +81,12 @@ class SumLast3(SM):
         output = previousPreviousInput + previousInput + inp
         return (newState, output)
 
+class Selector(SM):
+    def __init__(self, pickAtIndex):
+        self.pickAtIndex = pickAtIndex
+    def getNextState(self, state, inp):
+        return inp[self.pickAtIndex]
+
 # ---------------------------------------
 
 a = Accumulator(100)
@@ -127,3 +135,15 @@ prev3.start()
 prev3Inputs = [1,4,7,3,5,7,1,2,3]
 print 'prev3 inputs:', prev3Inputs
 print 'prev3 outputs:', prev3.transduce(prev3Inputs)
+
+selector = Selector(2)
+selector.start()
+selectorInputs = [[1,2,3], [5,6,7], [7,8,9,8,3]]
+print 'selector inputs:', selectorInputs
+print 'selector output:', selector.transduce(selectorInputs)
+selectorInputs = [(1,2,3), [5,6,7], [7,8,9,8,3]]
+print 'selector inputs:', selectorInputs
+print 'selector output:', selector.transduce(selectorInputs)
+selectorInputs = ((1,2,3), [5,6,7], [7,8,9,8,3])
+print 'selector inputs:', selectorInputs
+print 'selector output:', selector.transduce(selectorInputs)
