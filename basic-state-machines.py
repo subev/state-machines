@@ -60,6 +60,25 @@ class UpDown(SM):
         else:
             return state
 
+class R(SM): # DELAY MACHINE
+    def __init__(self, initial):
+        self.startState  = initial
+    def getNextValues(self, state, inp):
+        return (inp, state)
+
+class Average(SM):
+    startState = 0
+    def getNextValues(self, state, inp):
+        return (inp, (state + inp) / 2.0)
+
+class SumLast3(SM):
+    startState = (0, 0)
+    def getNextValues(self, state, inp):
+        (previousPreviousInput, previousInput) = state
+        newState = (previousInput, inp)
+        output = previousPreviousInput + previousInput + inp
+        return (newState, output)
+
 # ---------------------------------------
 
 a = Accumulator(100)
@@ -74,7 +93,9 @@ print'a2', a2.step(-20)
 
 g = Gain(5)
 g.start()
-print'Gain transduce', g.transduce([3, 6, 5, 3, 2, 3.1, 4.6, 0.33])
+gainInputs = [3, 6, 5, 3, 2, 3.1, 4.6, 0.33]
+print'Gain inputs:', gainInputs
+print'Gain output:', g.transduce(gainInputs)
 print'Gain sttep', g.step(4)
 
 language = LanguageAcceptor()
@@ -86,5 +107,23 @@ print'language acceptor output:', language.transduce(acceptorInput);
 ud = UpDown()
 ud.start()
 updownInput = ['r', 'e', 'u', 'd', 'u', 'u', 'u', 'd']
-print'up-down inputs', updownInput;
-print'up-down output', ud.transduce(updownInput);
+print'up-down inputs:', updownInput;
+print'up-down output:', ud.transduce(updownInput);
+
+delayInstance = R(6)
+delayInstance.start()
+delayInputs = [4,3,5,5,9,1]
+print 'delay inputs:', delayInputs
+print 'delay outputs:', delayInstance.transduce(delayInputs)
+
+average = Average()
+average.start()
+averageInputs = [5,10,15,5,23,44,12,38]
+print 'average inputs:', averageInputs
+print 'average output:', average.transduce(averageInputs)
+
+prev3 = SumLast3()
+prev3.start()
+prev3Inputs = [1,4,7,3,5,7,1,2,3]
+print 'prev3 inputs:', prev3Inputs
+print 'prev3 outputs:', prev3.transduce(prev3Inputs)
