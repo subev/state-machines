@@ -58,3 +58,48 @@ print 'selector output:', selector.transduce(selectorInputs)
 selectorInputs = ((1,2,3), [5,6,7], [7,8,9,8,3])
 print 'selector inputs:', selectorInputs
 print 'selector output:', selector.transduce(selectorInputs)
+
+parking = SimpleParkingGate()
+parkingInput = [
+    ('bottom', True, False),
+    ('bottom', True, False),
+    ('bottom', True, False),
+    ('bottom', True, False),
+    ('top', True, False),
+    ('top', True, False),
+    ('top', True, False),
+    ('top', True, False),
+    ('top', False, False),
+    ('top', False, False),
+    ('top', False, False),
+    ('top', False, False),
+    ('top', False, True),
+    ('top', False, True),
+    ('top', False, True),
+    ('top', False, True),
+    ('middle', False, True),
+    ('middle', False, True),
+    ('middle', False, True),
+    ('middle', False, False),
+    ('middle', False, False),
+    ('middle', False, False),
+    ('middle', False, False),
+    ('middle', False, False),
+    ('middle', False, False),
+    ('bottom', False, False),
+    ('bottom', False, False),
+    ('bottom', False, False),
+    ('bottom', False, False),
+    ('bottom', False, False),
+    ('bottom', False, False),
+    ('bottom', False, False),
+    ('bottom', False, False),
+    ('bottom', False, False),
+    ('bottom', True, False),
+    ('bottom', True, False),
+    ('bottom', True, False),
+    ('bottom', True, False),
+]
+print parkingInput
+parking.start()
+print parking.transduce(parkingInput)
