@@ -208,6 +208,15 @@ class Adder(SM):
         (i1, i2) = splitValue(inp)
         return safeAdd(i1, i2)
 
+class Multiplier(SM):
+    def getNextState(self, state, inp):
+        (i1, i2) = splitValue(inp)
+        return safeMul(i1, i2)
+
+class Wire(SM):
+    def getNextState(self, state, inp):
+        return inp
+
 def makeFibonaci():
     return Feedback(Cascade(
     Parallel(
@@ -217,4 +226,14 @@ def makeFibonaci():
         )
     ), Adder()))
 
+def makePowerer(init):
+    return Feedback(
+        Cascade(
+            Parallel(
+                Delay(init),
+                Delay(init)
+            ),
+            Multiplier()
+        )
+    )
 
