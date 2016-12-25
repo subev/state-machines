@@ -116,3 +116,7 @@ counter = makeCounter(3, 5)
 counter.start()
 print 'counter output', counter.run()
 
+fib = makeFibonaci()
+fib.start();
+print fib.run()
+

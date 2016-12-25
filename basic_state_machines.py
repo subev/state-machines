@@ -203,3 +203,18 @@ class Feedback(SM):
 def makeCounter(init, step):
     return Feedback(Cascade(Increment(step), Delay(init)))
 
+class Adder(SM):
+    def getNextState(self, state, inp):
+        (i1, i2) = splitValue(inp)
+        return safeAdd(i1, i2)
+
+def makeFibonaci():
+    return Feedback(Cascade(
+    Parallel(
+        Delay(0),
+        Cascade(
+            Delay(1),Delay(0)
+        )
+    ), Adder()))
+
+
