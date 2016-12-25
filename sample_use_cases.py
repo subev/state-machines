@@ -29,7 +29,7 @@ updownInput = ['r', 'e', 'u', 'd', 'u', 'u', 'u', 'd']
 print'up-down inputs:', updownInput;
 print'up-down output:', ud.transduce(updownInput);
 
-delayInstance = R(6)
+delayInstance = Delay(6)
 delayInstance.start()
 delayInputs = [4,3,5,5,9,1]
 print 'delay inputs:', delayInputs
@@ -103,3 +103,16 @@ parkingInput = [
 print parkingInput
 parking.start()
 print parking.transduce(parkingInput)
+
+#use cascade machine
+cascade = Cascade(Delay(100), Increment(5))
+cascade.start()
+cascadeInputs = [22, 33, 44, 55, 66]
+print 'cascadeInputs', cascadeInputs
+print 'cascadeOutputs', cascade.transduce(cascadeInputs)
+
+# use counter, (a feedback machine)
+counter = makeCounter(3, 5)
+counter.start()
+print 'counter output', counter.run()
+

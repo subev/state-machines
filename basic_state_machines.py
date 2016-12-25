@@ -18,6 +18,9 @@ class SM:
     def transduce(self, inputs):
         return [self.step(inp) for inp in inputs]
 
+    def run(self, n = 10):
+        return self.transduce([None] * n)
+
 
 class Accumulator(SM):
     def __init__(self, initialValue):
@@ -62,7 +65,7 @@ class UpDown(SM):
         else:
             return state
 
-class R(SM): # DELAY MACHINE
+class Delay(SM): # DELAY MACHINE
     def __init__(self, initial):
         self.startState  = initial
 
@@ -116,3 +119,87 @@ class SimpleParkingGate(SM):
             nextState = state
 
         return (nextState, self.generateOutput(nextState))
+
+#----------------------------------------
+class Cascade(SM):
+    def __init__(self, m1, m2):
+        self.m1 = m1
+        self.m2 = m2
+        self.startState = (m1.startState, m2.startState)
+
+    def getNextValues(self, state, inp):
+        (state1, state2) = state
+        (newS1, o1) = self.m1.getNextValues(state1, inp)
+        (newS2, o2) = self.m2.getNextValues(state2, o1)
+        return ((newS1, newS2), o2)
+
+class Increment(SM):
+    def __init__(self, incr):
+        self.incr = incr
+    def getNextState(self, state, inp):
+        return safeAdd(inp, self.incr)
+
+# COMBINING STATE MACHINES
+class Parallel(SM):
+    def __init__(self, m1, m2):
+        self.m1 = m1
+        self.m2 = m2
+        self.startState = (m1.startState, m2.startState)
+
+    def getNextValues(self, state, inp):
+        (s1, s2) = state
+        (newS1, out1) = self.m1.getNextValues(s1, inp)
+        (newS2, out2) = self.m2.getNextValues(s2, inp)
+        return ((newS1, newS2), (out1, out2))
+
+# Well known Variation of the Parallel class 
+class Parallel2(Parallel):
+    def getNextValues(self, state, inp):
+        (s1, s2) = state
+        (i1, i2) = splitValue(inp)
+        (newS1, out1) = self.m1.getNextValues(s1, i1)
+        (newS2, out2) = self.m2.getNextValues(s2, i2)
+        return ((newS1, newS2), (out1, out2))
+
+# helper function
+def splitValue(v):
+    if v == 'undefined':
+        return ('undefined', 'undefined')
+    else:
+        return v
+
+def safeAdd(v1, v2):
+    if v1 != 'undefined' and v2 != 'undefined':
+        return v1 + v2
+    else:
+        return 'undefined'
+
+def safeMul(v1, v2):
+    if v1 != 'undefined' and v2 != 'undefined':
+        return v1 * v2
+    else:
+        return 'undefined'
+
+class ParallelAdd(Parallel):
+    def getNextValues(self, state, inp):
+        (s1, s2) = state
+        newS1, o1 = self.m1.getNextValues(s1, inp)
+        newS2, o2 = self.m2.getNextValues(s2, inp)
+        return ((newS1, newS2), o1 + o2)
+
+
+class Feedback(SM):
+    def __init__(self, sm):
+        self.m = sm
+        self.startState = self.m.startState
+
+    def getNextValues(self, state, inp):
+        (ingore, o) = self.m.getNextValues(state, 'undefined')
+        (newState, ingore) = self.m.getNextValues(state, o)
+        return (newState, o)
+
+# make COUNTER machine without direct depending on state
+
+def makeCounter(init, step):
+    return Feedback(Cascade(Increment(step), Delay(init)))
+
