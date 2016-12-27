@@ -1,4 +1,7 @@
 class SM:
+    def __init__(self):
+        self.start()
+
     startState = None
 
     def start(self):
@@ -127,6 +130,12 @@ class Cascade(SM):
         self.m2 = m2
         self.startState = (m1.startState, m2.startState)
 
+    def start(self):
+        self.m1.start()
+        self.m2.start()
+        self.state = (self.m1.state, self.m2.state)
+        return self
+
     def getNextValues(self, state, inp):
         (state1, state2) = state
         (newS1, o1) = self.m1.getNextValues(state1, inp)
@@ -193,6 +202,11 @@ class Feedback(SM):
         self.m = sm
         self.startState = self.m.startState
 
+    def start(self):
+        self.m.start()
+        self.state = self.m.startState
+        return self
+
     def getNextValues(self, state, inp):
         (ingore, o) = self.m.getNextValues(state, 'undefined')
         (newState, ingore) = self.m.getNextValues(state, o)
@@ -201,7 +215,7 @@ class Feedback(SM):
 # make COUNTER machine without direct depending on state
 
 def makeCounter(init, step):
-    return Feedback(Cascade(Increment(step), Delay(init)))
+    return Feedback(Cascade(Increment(step), Delay(init))).start()
 
 class Adder(SM):
     def getNextState(self, state, inp):
@@ -236,4 +250,18 @@ def makePowerer(init):
             Multiplier()
         )
     )
+
+
+class Feedback2(Feedback):
+    def getNextValues(self, state, inp):
+        (ignore, o) = self.m.getNextValues(state, (inp, 'undefined'))
+        (newS, ignore) = self.m.getNextValues(state, (inp, o))
+        return (newS, o)
+
+
+def makeFact():
+    return Cascade(
+        makeCounter(1, 1),
+        Feedback2(Cascade(Multiplier(), Delay(1)))
+    ).start()
 

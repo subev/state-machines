@@ -113,7 +113,6 @@ print 'cascadeOutputs', cascade.transduce(cascadeInputs)
 
 # use counter, (a feedback machine)
 counter = makeCounter(3, 5)
-counter.start()
 print 'counter output', counter.run()
 
 fib = makeFibonaci()
@@ -123,3 +122,5 @@ print fib.run()
 powerer = makePowerer(3)
 powerer.start();
 print 'powerer:', powerer.run(5);
+
+print 'fact', makeFact().run(5);
